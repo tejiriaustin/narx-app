@@ -11,7 +11,7 @@ class Constants {
   static Color lightBG = Color(0xfffcfcff);
   static Color darkBG = Colors.black;
   static Color ratingBG = Colors.yellow;
-  static Color defaultBaseAppColor = Colors.blue;
+  static Color defaultBaseAppColor = Colors.green;
 
   static ThemeData lightTheme = ThemeData(
     backgroundColor: lightBG,

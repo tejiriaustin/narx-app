@@ -1,32 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:narx_app/pages/auth/forgot_password.dart';
 import 'package:narx_app/pages/auth/sign_up.dart';
-import 'package:narx_app/utils/const.dart';
 import 'package:narx_app/pages/auth/login.dart';
+import 'package:narx_app/pages/dashboard/analytics.dart';
 
 void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: Constants.appName,
-      theme: Constants.lightTheme,
-      darkTheme: Constants.darkTheme,
-      initialRoute: '/',
-      routes: {
-        "/login":  (context) => const LoginPage(),
-        "/signup": (context) => const SignupPage(),
-      },
-    );
-  }
+  runApp(
+    MaterialApp(
+      title: "Solarview",
+      initialRoute: '/signup',
+      routes: <String, WidgetBuilder>{
+          "/signup": (context) => const SignupScreen(),
+          "/login":  (context) => const LoginScreen(),
+          "/forgot-password": (context) => const ForgotPasswordPage(),
+          "/analytics": (context) => const AnalyticsPage(),
+        },
+    ),
+  );
 }

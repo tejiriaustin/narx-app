@@ -1,8 +1,44 @@
-import 'package:flutter/material.dart';
-import 'package:narx_app/utils/const.dart';
+import 'dart:async';
+import 'dart:convert';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+
+import 'package:narx_app/utils/const.dart';
+import 'package:narx_app/view_models/account.dart';
+
+var backendUrl = "https://narx-api.onrender.com/v1";
+
+Future<Account> login(String email, String password) async {
+  final http.Response response = await http.post(
+    Uri.parse('$backendUrl/login'),
+    headers: <String, String>{
+	    'Content-Type': 'application/json; charset=UTF-8',
+	  },
+	  body: jsonEncode(<String, String>{
+	    'email': email,
+      'password': password
+	}),
+  );
+  if (response.statusCode == 200) {
+	    return Account.fromJson(json.decode(response.body));
+  } else {
+      print(response.statusCode);
+	    throw Exception(response.body);
+  }
+}
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginPageScreenState();
+}
+
+class _LoginPageScreenState extends State<LoginScreen> {
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +78,7 @@ class LoginPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         TextField(
+          controller: emailController,
           decoration: InputDecoration(
               hintText: "Email",
               border: OutlineInputBorder(
@@ -54,6 +91,7 @@ class LoginPage extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         TextField(
+          controller: passwordController,
           decoration: InputDecoration(
             hintText: "Password",
             border: OutlineInputBorder(
@@ -68,6 +106,8 @@ class LoginPage extends StatelessWidget {
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () {
+            setState(() {
+						});
           },
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
