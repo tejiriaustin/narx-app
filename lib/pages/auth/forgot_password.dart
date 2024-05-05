@@ -2,14 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:narx_app/utils/const.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:narx_app/widgets/dialog.dart';
+import 'package:narx_app/utils/const.dart';
+
 
 var backendUrl = "https://narx-api.onrender.com/v1";
 
-Future<Null> login(String email) async {
+Future<Null> forgotPassword(String email) async {
   final http.Response response = await http.post(
-    Uri.parse('$backendUrl/forgot-password'),
+    Uri.parse('$backendUrl/user/forgot-password'),
     headers: <String, String>{
 	    'Content-Type': 'application/json; charset=UTF-8',
 	  },
@@ -23,8 +26,15 @@ Future<Null> login(String email) async {
 }
 }
 
-class ForgotPasswordPage extends StatelessWidget {
-  const ForgotPasswordPage({super.key});
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
+
+  @override
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  TextEditingController emailController = TextEditingController();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -51,10 +61,10 @@ class ForgotPasswordPage extends StatelessWidget {
     return const Column(
       children: [
         Text(
-          "Welcome Back",
+          "Forgot Your Password",
           style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
         ),
-        Text("Enter your credential to login"),
+        Text("Enter your email address", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -64,6 +74,7 @@ class ForgotPasswordPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         TextField(
+          controller: emailController,
           decoration: InputDecoration(
               hintText: "Email",
               border: OutlineInputBorder(
@@ -77,8 +88,25 @@ class ForgotPasswordPage extends StatelessWidget {
         
         const SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {
-          
+          onPressed: isLoading ? null : () async {
+            setState(() {
+              isLoading = true;
+            });
+            String errorMessage = '';
+
+            try {
+              await forgotPassword(emailController.text.toString());
+              Navigator.of(context).pushNamed('/dashboard');
+            } catch (e) {
+                errorMessage = e.toString();
+            }
+            setState(() {
+              isLoading = false;
+            });
+            // Show error dialog
+            if (errorMessage.isNotEmpty && Navigator.canPop(context)) {
+              showErrorDialog(context, errorMessage);
+            }
           },
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),

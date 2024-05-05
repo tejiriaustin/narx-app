@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:narx_app/pages/auth/login.dart';
 import 'package:narx_app/pages/auth/sign_up.dart';
+import 'package:narx_app/pages/dashboard/dashboard.dart';
+import 'package:narx_app/pages/auth/forgot_password.dart';
 
 
 void main() {
@@ -16,6 +18,8 @@ void main() {
           "/": (context) => const SplashScreen(),
           "/signup": (context) => const SignupScreen(),
           "/login": (context) => const LoginScreen(),
+          "/dashboard": (context) => const DashboardScreen(),
+          "/forgot-password": (context) => const ForgotPasswordScreen(),
         },
     ),
   );

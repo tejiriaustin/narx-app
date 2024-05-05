@@ -7,13 +7,15 @@ class Account {
 
   Account({required this.email, required this.password, required this.firstName, required this.lastName, required this.token});
 
-  factory Account.fromJson(Map<String, dynamic> json) {
+  factory Account.fromJson(Map<String, dynamic> jsonMap) {
+    Map<String, dynamic> body = jsonMap['body'];
+
     return Account(
-      email: json['email'], 
-      password: json['password'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-      token: json['token'],
+      email: body['email'], 
+      password: body['password'],
+      firstName: body['firstName'],
+      lastName: body['lastName'],
+      token: body['token'],
       );
   }
 }

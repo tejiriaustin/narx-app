@@ -32,7 +32,7 @@ Future<Account> login(String email, String password) async {
 }
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginPageScreenState();
@@ -42,10 +42,12 @@ class _LoginPageScreenState extends State<LoginScreen> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       body: Container(
         margin: const EdgeInsets.all(24),
         child: Column(
@@ -85,7 +87,7 @@ class _LoginPageScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(18),
                   borderSide: BorderSide.none
                   ),
-              fillColor: Constants.defaultBaseAppColor.withOpacity(0.1),
+              fillColor: Constants.defaultGrey.withOpacity(0.1),
               filled: true,
               prefixIcon: const Icon(Icons.person)),
         ),
@@ -97,7 +99,7 @@ class _LoginPageScreenState extends State<LoginScreen> {
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(18),
                 borderSide: BorderSide.none),
-            fillColor: Constants.defaultBaseAppColor.withOpacity(0.1),
+            fillColor: Constants.defaultGrey.withOpacity(0.1),
             filled: true,
             prefixIcon: const Icon(Icons.password),
           ),
@@ -105,18 +107,25 @@ class _LoginPageScreenState extends State<LoginScreen> {
         ),
         const SizedBox(height: 10),
         ElevatedButton(
-          onPressed: () async {
-            String errorMessage = '';
+          onPressed: isLoading ? null : () async {
+            setState(() {
+              isLoading = true;
+            });
 
+            String errorMessage = '';
             try {
               Account account = await login(emailController.text.toString(), passwordController.text.toString());
               if (account.token != '') {
                 AuthService.saveAuthToken(account.token);
               }
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const DashboardScreen()));
+              Navigator.of(context).pushNamed('/dashboard');
             } catch (e) {
               errorMessage = e.toString();
             }
+
+            setState(() {
+              isLoading = false;
+            });
 
             // Show error dialog
             if (errorMessage.isNotEmpty && Navigator.canPop(context)) {
@@ -128,10 +137,19 @@ class _LoginPageScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.symmetric(vertical: 16),
             backgroundColor: Constants.defaultBaseAppColor,
           ),
-          child: const Text(
-            "Login",
-            style: TextStyle(fontSize: 20, color: Colors.white),
-          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isLoading) ...[
+                const CircularProgressIndicator(color: Colors.white),
+                const SizedBox(width: 10),
+              ],
+              const Text(
+                "Login",
+                style: TextStyle(fontSize: 20, color: Colors.white),
+              ),
+            ],
+          )
         )
       ],
     );
@@ -139,7 +157,9 @@ class _LoginPageScreenState extends State<LoginScreen> {
 
   _forgotPassword(context) {
     return TextButton(
-      onPressed: () {},
+      onPressed: () {
+        Navigator.pushNamed(context, '/forgot-password');
+      },
       child: const Text("Forgot password?",
         style: TextStyle(color: Colors.green),
       ),
