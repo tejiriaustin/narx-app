@@ -127,7 +127,7 @@ class _LoginPageScreenState extends State<LoginScreen> {
     return TextButton(
       onPressed: () {},
       child: const Text("Forgot password?",
-        style: TextStyle(color: Colors.blue),
+        style: TextStyle(color: Colors.green),
       ),
     );
   }
@@ -141,7 +141,7 @@ class _LoginPageScreenState extends State<LoginScreen> {
             onPressed: () {
                Navigator.pushNamed(context, '/signup');
              },
-            child: const Text("Sign Up", style: TextStyle(color: Colors.blue),)
+            child: const Text("Sign Up", style: TextStyle(color: Colors.green),)
         )
       ],
     );

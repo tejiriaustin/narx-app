@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:narx_app/pages/dashboard/dashboard.dart';
 
 import 'package:narx_app/view_models/account.dart';
+import 'package:narx_app/services/auth.dart';
 
 
-final defaultColor = Colors.blue.withOpacity(0.1);
+final defaultColor = Colors.green.withOpacity(0.1);
 
 var backendUrl = "https://narx-api.onrender.com/v1";
 
@@ -28,7 +30,6 @@ Future<Account> signup(String email, String password) async {
 	    throw Exception(response.body);
   }
 }
-
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -129,15 +130,26 @@ class _SignupScreenState extends State<SignupScreen> {
                     padding: const EdgeInsets.only(top: 3, left: 3),
 
                     child: ElevatedButton(
-                      onPressed: () {
-                        var account = signup(emailController.text.toString(), passwordController.text.toString());
-                        print(account);
-                        Navigator.pushNamed(context, "/dashboard");
+                      onPressed: () async {
+                        try {
+                          Account account = await signup(emailController.text.toString(), passwordController.text.toString());
+                          if (account.token != '') {
+                            AuthService.saveAuthToken(account.token);
+                          } 
+                        } catch (e) {
+                            print('Error: $e');
+                          }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DashboardScreen(),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         shape: const StadiumBorder(),
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: Colors.blue,
+                        backgroundColor: Colors.green,
                       ),
                       child: const Text(
                         "Sign up",
@@ -154,7 +166,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(25),
                     border: Border.all(
-                      color: Colors.blue,
+                      color: Colors.green,
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -183,7 +195,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         const Text("Sign In with Google",
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.blue,
+                            color: Colors.green,
                           ),
                         ),
                       ],
@@ -199,7 +211,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         onPressed: () {
                           Navigator.of(context).pushNamed('/login');
                         },
-                        child: const Text("Login", style: TextStyle(color: Colors.blue),)
+                        child: const Text("Login", style: TextStyle(color: Colors.green),)
                     )
                   ],
                 )
