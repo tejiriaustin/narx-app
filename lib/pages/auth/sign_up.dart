@@ -177,7 +177,6 @@ class _SignupScreenState extends State<SignupScreen> {
                         }
                         // Show error dialog
                         if (errorMessage.isNotEmpty && Navigator.canPop(context)) {
-                          print(errorMessage);
                           showErrorDialog(context, errorMessage);
                         }
                       },
