@@ -2,17 +2,18 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:narx_app/pages/dashboard/dashboard.dart';
 
+import 'package:narx_app/pages/dashboard/dashboard.dart';
 import 'package:narx_app/view_models/account.dart';
 import 'package:narx_app/services/auth.dart';
+import 'package:narx_app/widgets/dialog.dart';
 
 
 final defaultColor = Colors.green.withOpacity(0.1);
 
 var backendUrl = "https://narx-api.onrender.com/v1";
 
-Future<Account> signup(String email, String password) async {
+Future<Account> signup(String email, String password, String firstName, String lastName) async {
   final http.Response response = await http.post(
     Uri.parse('$backendUrl/user/sign-up'),
     headers: <String, String>{
@@ -20,14 +21,16 @@ Future<Account> signup(String email, String password) async {
     },
     body: jsonEncode(<String, String>{
       'email': email,
-      'password': password
+      'password': password,
+      'firstName': firstName,
+      'lastName': lastName,
     }),
   );
 
   if (response.statusCode == 200) {
-	    return Account.fromJson(json.decode(response.body));
+	  return Account.fromJson(json.decode(response.body));
   } else {
-	    throw Exception(response.body);
+	  throw Exception(response.body);
   }
 }
 
@@ -41,6 +44,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController firstNameController= TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
   
   @override
   Widget build(BuildContext context) {
@@ -60,25 +65,49 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: <Widget>[
                     const SizedBox(height: 60.0),
 
-                    const Text(
-                      "Sign up",
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      "Create your account",
-                      style: TextStyle(fontSize: 15, color: Colors.grey[700]),
-                    )
+                    const Text("Sign up",style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 20),
+                    Text("Create your account",style: TextStyle(fontSize: 15, color: Colors.grey[700]))
                   ],
                 ),
                 Column(
                   children: <Widget>[
 
+                    const SizedBox(height: 20),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: firstNameController,
+                            decoration: InputDecoration(
+                                hintText: "First Name",
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    borderSide: BorderSide.none),
+                                fillColor: defaultColor,
+                                filled: true,
+                                prefixIcon: const Icon(Icons.person)),
+                          ),
+                        ),
+
+                        const SizedBox(width: 20),
+
+                        Expanded(
+                          child: TextField(
+                            controller: lastNameController,
+                            decoration: InputDecoration(
+                                hintText: "Last Name",
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    borderSide: BorderSide.none),
+                                fillColor: defaultColor,
+                                filled: true,
+                                prefixIcon: const Icon(Icons.person)),
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 20),
 
                     TextField(
@@ -128,23 +157,29 @@ class _SignupScreenState extends State<SignupScreen> {
                 
                 Container(
                     padding: const EdgeInsets.only(top: 3, left: 3),
-
                     child: ElevatedButton(
                       onPressed: () async {
+                        String errorMessage = '';
+
                         try {
-                          Account account = await signup(emailController.text.toString(), passwordController.text.toString());
+                          Account account = await signup(emailController.text.toString(), passwordController.text.toString(), firstNameController.text.toString(), lastNameController.text.toString());
                           if (account.token != '') {
                             AuthService.saveAuthToken(account.token);
                           } 
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const DashboardScreen(),
+                            ),
+                          );
                         } catch (e) {
-                            print('Error: $e');
-                          }
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const DashboardScreen(),
-                          ),
-                        );
+                            errorMessage = e.toString();
+                        }
+                        // Show error dialog
+                        if (errorMessage.isNotEmpty && Navigator.canPop(context)) {
+                          print(errorMessage);
+                          showErrorDialog(context, errorMessage);
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         shape: const StadiumBorder(),

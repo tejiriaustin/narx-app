@@ -60,14 +60,14 @@ class SplashScreenState extends State<SplashScreen> {
           children: [
             Image.asset(
               'assets/icon/icon.png',
-              height: 50,
-              width: 50,
+              height: 60,
+              width: 60,
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 5),
             const Text(
-              'Solaview',
+              'Solarview',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.green,
               ),

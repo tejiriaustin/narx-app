@@ -4,14 +4,17 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
+import 'package:narx_app/pages/dashboard/dashboard.dart';
+import 'package:narx_app/services/auth.dart';
 import 'package:narx_app/utils/const.dart';
 import 'package:narx_app/view_models/account.dart';
+import 'package:narx_app/widgets/dialog.dart';
 
 var backendUrl = "https://narx-api.onrender.com/v1";
 
 Future<Account> login(String email, String password) async {
   final http.Response response = await http.post(
-    Uri.parse('$backendUrl/login'),
+    Uri.parse('$backendUrl/user/login'),
     headers: <String, String>{
 	    'Content-Type': 'application/json; charset=UTF-8',
 	  },
@@ -20,16 +23,16 @@ Future<Account> login(String email, String password) async {
       'password': password
 	}),
   );
+
   if (response.statusCode == 200) {
-	    return Account.fromJson(json.decode(response.body));
+	  return Account.fromJson(json.decode(response.body));
   } else {
-      print(response.statusCode);
-	    throw Exception(response.body);
+	  throw Exception(response.body);
   }
 }
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginPageScreenState();
@@ -42,20 +45,17 @@ class _LoginPageScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Container(
-          margin: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _header(context),
-              _inputField(context),
-              _forgotPassword(context),
-              _signup(context),
-            ],
-          ),
+    return Scaffold(
+      body: Container(
+        margin: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _header(context),
+            _inputField(context),
+            _forgotPassword(context),
+            _signup(context),
+          ],
         ),
       ),
     );
@@ -105,9 +105,23 @@ class _LoginPageScreenState extends State<LoginScreen> {
         ),
         const SizedBox(height: 10),
         ElevatedButton(
-          onPressed: () {
-            setState(() {
-						});
+          onPressed: () async {
+            String errorMessage = '';
+
+            try {
+              Account account = await login(emailController.text.toString(), passwordController.text.toString());
+              if (account.token != '') {
+                AuthService.saveAuthToken(account.token);
+              }
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const DashboardScreen()));
+            } catch (e) {
+              errorMessage = e.toString();
+            }
+
+            // Show error dialog
+            if (errorMessage.isNotEmpty && Navigator.canPop(context)) {
+              showErrorDialog(context, errorMessage);
+            }
           },
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
