@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
-import 'package:narx_app/pages/dashboard/dashboard.dart';
 import 'package:narx_app/services/auth.dart';
 import 'package:narx_app/utils/const.dart';
 import 'package:narx_app/view_models/account.dart';
@@ -116,9 +115,10 @@ class _LoginPageScreenState extends State<LoginScreen> {
             try {
               Account account = await login(emailController.text.toString(), passwordController.text.toString());
               if (account.token != '') {
+                print(account.token);
                 AuthService.saveAuthToken(account.token);
+                if (context.mounted) Navigator.pushNamed(context, '/dashboard');
               }
-              Navigator.of(context).pushNamed('/dashboard');
             } catch (e) {
               errorMessage = e.toString();
             }
@@ -142,7 +142,7 @@ class _LoginPageScreenState extends State<LoginScreen> {
             children: [
               if (isLoading) ...[
                 const CircularProgressIndicator(color: Colors.white),
-                const SizedBox(width: 10),
+                const SizedBox(width: 7),
               ],
               const Text(
                 "Login",

@@ -127,7 +127,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       onPressed: () {
         Navigator.pushNamed(context, '/login');
       },
-      child: const Text("Login", style: TextStyle(color: Colors.blue)),
+      child: const Text("Login", style: TextStyle(color: Colors.green)),
     );
   }
 
@@ -140,7 +140,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             onPressed: () {
                Navigator.pushNamed(context, '/signup');
              },
-            child: const Text("Sign Up", style: TextStyle(color: Colors.blue),)
+            child: const Text("Sign Up", style: TextStyle(color: Colors.green),)
         )
       ],
     );

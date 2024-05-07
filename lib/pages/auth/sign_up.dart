@@ -89,7 +89,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
 
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 10),
 
                       Expanded(
                         child: TextField(
@@ -166,8 +166,8 @@ class _SignupScreenState extends State<SignupScreen> {
                         Account account = await signup(emailController.text.toString(), passwordController.text.toString(), firstNameController.text.toString(), lastNameController.text.toString());
                         if (account.token != '') {
                           AuthService.saveAuthToken(account.token);
+                          if (context.mounted) Navigator.pushNamed(context, '/dashboard');
                         } 
-                        if (context.mounted) Navigator.of(context).pushNamed('/dashboard');
                       } catch (e) {
                           errorMessage = e.toString();
                       }
