@@ -25,7 +25,8 @@ void main() {
   );
 }
 
-
+// tejiriaustin123@gmail.com
+// $password
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 

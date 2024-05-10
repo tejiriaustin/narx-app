@@ -115,7 +115,6 @@ class _LoginPageScreenState extends State<LoginScreen> {
             try {
               Account account = await login(emailController.text.toString(), passwordController.text.toString());
               if (account.token != '') {
-                print(account.token);
                 AuthService.saveAuthToken(account.token);
                 if (context.mounted) Navigator.pushNamed(context, '/dashboard');
               }

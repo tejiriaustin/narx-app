@@ -43,12 +43,58 @@ class _SignupScreenState extends State<SignupScreen> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController firstNameController= TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   bool isLoading = false;
+  bool allFieldsFilled = false;
+
+
+  void updateAllFieldsFilled() {
+    setState(() {
+      allFieldsFilled = emailController.text.isNotEmpty &&
+          passwordController.text.isNotEmpty &&
+          firstNameController.text.isNotEmpty &&
+          lastNameController.text.isNotEmpty &&
+          confirmPasswordController.text.isNotEmpty;
+    });
+  }
+
+  void handleSubmitConditions(BuildContext context) {
+  if (passwordController.text == confirmPasswordController.text) {
+    handleMakeRequest(context);
+  } else {
+    showErrorDialog(context, "Passwords don't match!");
+  }
+  }
+
+  void handleMakeRequest(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
+    String errorMessage = '';
+
+    try {
+      Account account = await signup(emailController.text.toString(), passwordController.text.toString(), firstNameController.text.toString(), lastNameController.text.toString());
+      if (account.token != '') {
+        AuthService.saveAuthToken(account.token);
+        if (context.mounted) Navigator.pushNamed(context, '/dashboard');
+      } 
+    } catch (e) {
+        errorMessage = e.toString();
+    }
+    setState(() {
+      isLoading = false;
+    });
+    // Show error dialog
+    if (errorMessage.isNotEmpty && context.mounted && Navigator.canPop(context)) showErrorDialog(context, errorMessage);
+  }
+
   
   @override
   Widget build(BuildContext context) {
+    updateAllFieldsFilled();
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -77,6 +123,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     children: [
                       Expanded(
                         child: TextField(
+                          onChanged: (text) => updateAllFieldsFilled(),
                           controller: firstNameController,
                           decoration: InputDecoration(
                               hintText: "First Name",
@@ -93,6 +140,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                       Expanded(
                         child: TextField(
+                          onChanged: (text) => updateAllFieldsFilled(),
                           controller: lastNameController,
                           decoration: InputDecoration(
                               hintText: "Last Name",
@@ -109,6 +157,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 20),
 
                   TextField(
+                    onChanged: (text) => updateAllFieldsFilled(),
                     controller: emailController,
                     decoration: InputDecoration(
                         hintText: "Email",
@@ -123,6 +172,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 20),
 
                   TextField(
+                    onChanged: (text) => updateAllFieldsFilled(),
                     controller: passwordController,
                     decoration: InputDecoration(
                       hintText: "Password",
@@ -139,6 +189,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 20),
 
                   TextField(
+                    onChanged: (text) => updateAllFieldsFilled(),
+                    controller: confirmPasswordController,
                     decoration: InputDecoration(
                       hintText: "Confirm Password",
                       border: OutlineInputBorder(
@@ -157,25 +209,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   padding: const EdgeInsets.only(top: 3, left: 3),
                   child: ElevatedButton(
                     onPressed: isLoading ? null : () async {
-                      setState(() {
-                        isLoading = true;
-                      });
-                      String errorMessage = '';
-
-                      try {
-                        Account account = await signup(emailController.text.toString(), passwordController.text.toString(), firstNameController.text.toString(), lastNameController.text.toString());
-                        if (account.token != '') {
-                          AuthService.saveAuthToken(account.token);
-                          if (context.mounted) Navigator.pushNamed(context, '/dashboard');
-                        } 
-                      } catch (e) {
-                          errorMessage = e.toString();
-                      }
-                      setState(() {
-                        isLoading = false;
-                      });
-                      // Show error dialog
-                      if (errorMessage.isNotEmpty && context.mounted && Navigator.canPop(context)) showErrorDialog(context, errorMessage);
+                      handleMakeRequest(context);
                     },
                     style: ElevatedButton.styleFrom(
                       shape: const StadiumBorder(),
