@@ -5,6 +5,7 @@ class Sensor {
   final String ipAddress;
   final String name;
   final String status;
+  final String image;
 
   Sensor({
     required this.id,
@@ -13,6 +14,7 @@ class Sensor {
     required this.ipAddress,
     required this.name,
     required this.status,
+    required this.image,
   });
 
   factory Sensor.fromJson(Map<String, dynamic> json) => Sensor(
@@ -21,6 +23,7 @@ class Sensor {
         ipAddress: json['ipAddress'] as String,
         name: json['name'] as String,
         status: json['status'] as String,
+        image: "",
       );
 
   Map<String, dynamic> toJson() => {
@@ -29,6 +32,7 @@ class Sensor {
         'ip_address': ipAddress,
         'name': name,
         'status': status,
+        'image':'',
       };
 
   static List<Sensor> fromJsonArray(List<dynamic> jsonArray) {
