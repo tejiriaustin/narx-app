@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:narx_app/widgets/dialog.dart';
-import 'package:narx_app/utils/const.dart';
+import 'package:narx_app/constants/const.dart';
 
 
 var backendUrl = "https://narx-api.onrender.com/v1";

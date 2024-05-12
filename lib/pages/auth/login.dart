@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 import 'package:narx_app/services/auth.dart';
-import 'package:narx_app/utils/const.dart';
+import 'package:narx_app/constants/const.dart';
 import 'package:narx_app/view_models/account.dart';
 import 'package:narx_app/widgets/dialog.dart';
 
